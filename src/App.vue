@@ -7,11 +7,32 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'App',
   components: {
     HelloWorld
+  },
+  beforeMount(){
+    this.loadMovies({
+      page: '1',
+      language: 'pt-BR'
+    })
+
+    console.log('Filmes: ',this.movies);
+    console.log('Página: ',this.currentPage);
+  },
+  computed: {
+    ...mapGetters({
+      movies: 'movies/getMovies',
+      currentPage: 'movies/getCurrentPage',
+    })
+  },
+  methods: {
+    ...mapActions({
+      loadMovies: 'movies/loadMovies'
+    })
   }
 }
 </script>
