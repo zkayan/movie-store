@@ -1,0 +1,144 @@
+body{
+    margin: 0;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #4b5c6b;
+}
+
+.btn-primary{
+    background-color: #6558f5;
+    padding: 10px;
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    border: 2px solid #9eadba;
+    cursor: pointer;
+    outline: none;
+    transition: 0.3s;
+}
+.btn-primary:hover{
+    background-color: #8dd7cf;
+    color: #4b5c6b;
+}
+.mb-30{
+    margin-bottom: 30px;
+}
+.card-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    column-gap: 30px;
+    margin: 0 5em;
+    padding-top:75px
+}
+
+.header {
+    padding: 7px 0;
+    text-align: center;
+    width: 100%;
+    background-color: #8dd7cf;
+    color: #fff;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 10px;
+    justify-items: center;
+    position: fixed;
+    z-index: 9999;
+    .logo{
+        font-size: 1.3rem;
+        font-weight: 900;
+    }
+    .search-container {
+        display: inline-flex;
+        position: relative;
+        border: 1px solid #4b5c6b;
+        border-radius: 3px;
+        background-color: #fff;
+        width: 250px;
+        .search {
+            border: 0;
+            padding: 0.5rem 0 0.5rem 0.5rem;
+            flex: 1;
+        }
+        .search:focus {
+            border: none;
+            outline: none;
+        }
+        .search-icon {
+            cursor: pointer;
+            color: #4b5c6b;
+            padding: 0.5rem;
+        }
+    }
+    .icons{
+        cursor: pointer;
+        font-size: 1.3rem;
+        transition: 0.3s;
+    }
+    .icons:hover{
+        color: #4b5c6b;
+    }
+    .cart-icon{
+        margin-left: 15px;
+    }
+}
+
+.card{
+    border: 2px solid #9eadba;
+    font-weight: bold;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    img{
+        max-width: 100%;
+    }
+    p, h4{
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+    .vote{
+        font-weight: 900;
+    }
+    .img-movie{
+        display: flex;
+        position: relative;
+        border-bottom: 2px solid #9eadba;
+        margin-bottom: 5px;
+        p{
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #ffffffb8;
+            margin: 0;
+            padding-bottom: 0;
+            font-weight: 900;
+        }
+        .favorite-icon{
+            font-size: 1.5em;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .favorite-icon:hover{
+            color:#8dd7cf;
+        }
+    }
+    .btn-primary{
+        border: none;
+        width: 100%;
+        border-top: 2px solid #9eadba;
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 1350px)
+{
+    .card-list{
+        margin: 0 15em;
+    }
+}

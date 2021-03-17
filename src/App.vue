@@ -1,49 +1,62 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header/>
+    <div class="card-list" v-if="loadedMovies.length > 0 && genreList.length > 0">
+      <!-- <Card  :movie="loadedMovies[0]" :genreList="genreList"/> -->
+      <div v-for="(movie, i) in loadedMovies" :key="i" class="mb-30">
+        <Card :movie="movie" :genreList="genreList"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/Header.vue'
+import Card from './components/Card.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Header,
+    Card
   },
-  beforeMount(){
-    this.loadMovies({
+  data: function () {
+    return {
+      loadedMovies: [],
+      currentCart: [],
+      genreList: []
+    }
+  },
+  watch: {
+    movies: function () {
+      this.loadedMovies = this.movies
+    },
+    genre: function () {
+      this.genreList = this.genre
+    }
+  },
+  beforeMount: async function(){
+    await this.loadMovies({
       page: '1',
       language: 'pt-BR'
     })
-
-    console.log('Filmes: ',this.movies);
-    console.log('Página: ',this.currentPage);
+    await this.loadGenre({
+      language: 'pt-BR'
+    })
   },
   computed: {
     ...mapGetters({
       movies: 'movies/getMovies',
       currentPage: 'movies/getCurrentPage',
+      genre: 'movies/getGenre',
     })
   },
   methods: {
     ...mapActions({
-      loadMovies: 'movies/loadMovies'
+      loadMovies: 'movies/loadMovies',
+      loadGenre: 'movies/loadGenre'
     })
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
