@@ -1,62 +1,39 @@
 <template>
-  <div id="app">
-    <Header/>
-    <div class="card-list" v-if="loadedMovies.length > 0 && genreList.length > 0">
-      <!-- <Card  :movie="loadedMovies[0]" :genreList="genreList"/> -->
-      <div v-for="(movie, i) in loadedMovies" :key="i" class="mb-30">
-        <Card :movie="movie" :genreList="genreList"/>
-      </div>
+    <div id="app">
+        <Header/>
+        <div>
+            <router-view></router-view>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
-import Card from './components/Card.vue'
-import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'App',
-  components: {
-    Header,
-    Card
-  },
-  data: function () {
-    return {
-      loadedMovies: [],
-      currentCart: [],
-      genreList: []
-    }
-  },
-  watch: {
-    movies: function () {
-      this.loadedMovies = this.movies
+    name: 'App',
+    components: {
+        Header,
     },
-    genre: function () {
-      this.genreList = this.genre
-    }
-  },
-  beforeMount: async function(){
-    await this.loadMovies({
-      page: '1',
-      language: 'pt-BR'
-    })
-    await this.loadGenre({
-      language: 'pt-BR'
-    })
-  },
-  computed: {
-    ...mapGetters({
-      movies: 'movies/getMovies',
-      currentPage: 'movies/getCurrentPage',
-      genre: 'movies/getGenre',
-    })
-  },
-  methods: {
-    ...mapActions({
-      loadMovies: 'movies/loadMovies',
-      loadGenre: 'movies/loadGenre'
-    })
-  }
 }
 </script>
+
+<style>
+	@keyframes slide-card-in {
+		from { transform: translateY(-10px); opacity: 0; }
+		to { transform: translateY(0px); opacity: 1; }
+	}
+
+	@keyframes slide-card-out {
+		from { transform: translateY(0px); opacity: 1; }
+		to { transform: translateY(-10px); opacity: 0; }
+	}
+
+	.slide-card-enter-active {
+		animation: slide-card-in 0.7s ease;
+	}
+
+	.slide-card-leave-active {
+		animation: slide-card-out 0.7s ease;
+	}
+</style>

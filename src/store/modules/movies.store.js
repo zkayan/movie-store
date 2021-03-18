@@ -7,6 +7,10 @@ const initialState = () => ({
 	cart: [],
   favorites: [],
   genre: [],
+  totalCart: {
+    movies: 0,
+    value: 0
+  }
 })
 
 // State object
@@ -29,6 +33,9 @@ const getters = {
 	getGenre(state) {
 		return state.genre
 	},
+	getTotalCart(state) {
+		return state.totalCart
+	},
 }
 
 // Actions
@@ -48,6 +55,15 @@ const actions = {
       })
   },
 	saveCart({ commit }, movies ) {
+    let total = {
+      movies: 0,
+      value: 0
+    }
+    movies.forEach(element => {
+      total.movies += element.amount
+      total.value += element.price * element.amount
+    })
+		commit('setTotalCart', total)
 		commit('setCart', movies)
 	},
 	saveFavorites({ commit }, movies ) {
@@ -77,6 +93,9 @@ const mutations = {
 	},
 	setGenre(state, data) {
 		state.genre = data
+	},
+	setTotalCart(state, data) {
+		state.totalCart = data
 	},
 }
 
