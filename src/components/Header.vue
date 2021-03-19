@@ -3,8 +3,8 @@
         <div class="header">
             <div class="logo" @click="navigateTo('/')">LOGO</div>
             <div class="search-container">
-                <input type="text" class="search" placeholder="Pesquisa">
-                <font-awesome-icon icon="search" class="search-icon" />
+                <input type="text" class="search" @keyup="searchMovie()" v-model="search" placeholder="Pesquisa">
+                <font-awesome-icon icon="search" class="search-icon" @click="searchMovie()" />
             </div>
             <div class="header-icons">
                 <font-awesome-icon class="icons btn-icons" icon="heart" @click="openFavorite()" />
@@ -50,12 +50,12 @@
                             <font-awesome-icon class="collapse-icons btn-icons" icon="trash" v-tooltip.bottom-end="'Remover do carrinho'" @click="removeCart(movie.id)" />
                         </div>
                     </div>
-                    <div class="collapse-footer">
+                    <div class="total-group">
                         <div class="total">
                             <h4>Total:</h4>
                             <h2>R$ {{ totalCart.value.toFixed(2).replace('.',',') }}</h2>
                         </div>
-                        <button class="btn-primary w-80" @click="navigateTo('checkout')">Finalizar compra</button>
+                        <button class="btn-primary" @click="navigateTo('checkout')">Finalizar compra</button>
                     </div>
                 </template>
                 <div v-else>
@@ -77,20 +77,27 @@ export default {
             show: {
                 favorite: false,
                 cart: false,
-            }
+            },
+            search: null
         }
+    },
+    mounted () {
+        this.scroll()
     },
     computed: {
         ...mapGetters({
             favorites: 'movies/getFavorites',
             cart: 'movies/getCart',
             totalCart: 'movies/getTotalCart',
+            currentPage: 'movies/getCurrentPage',
         }),
     },
     methods: {
         ...mapActions({
             saveFavorites: 'movies/saveFavorites',
+            loadMovies: 'movies/loadMovies',
             saveCart: 'movies/saveCart',
+            searchMovies: 'movies/searchMovies',
         }),
         openFavorite(){
             this.show.favorite = true
@@ -181,7 +188,47 @@ export default {
         },
         navigateTo(route){
             this.closeCollapse()
+            this.search = ''
+            this.loadMovies({
+                page: 1,
+                language: 'pt-BR'
+            })
             this.$router.push(route);
+        },
+        searchMovie(){
+            if(this.search){
+                window.scrollTo(0,0);
+                this.searchMovies({
+                    query: this.search,
+                    language: 'pt-BR',
+                    page: 1
+                })
+            } else {
+                this.loadMovies({
+                    page: 1,
+                    language: 'pt-BR'
+                })
+            }
+        },
+        scroll () {
+            window.onscroll = () => {
+                let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight === document.documentElement.offsetHeight
+
+                if (bottomOfWindow) {
+                    if(this.search){
+                    this.searchMovies({
+                        query: this.search,
+                        language: 'pt-BR',
+                        page: this.currentPage + 1
+                    })
+                    } else {
+                        this.loadMovies({
+                            page: this.currentPage + 1,
+                            language: 'pt-BR'
+                        })
+                    }
+                }
+            }
         }
     }
   

@@ -2,7 +2,8 @@
     <div class="card">
         <div class="img-movie">
             <font-awesome-icon class="favorite-icon btn-icons" :class="favorite ? 'favorite-color' : ''" icon="heart" @click="changeFavorite()" /> 
-            <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="movie poster">
+            <img v-if="movie.poster_path" :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="movie poster">
+            <img v-else src="https://dummyimage.com/500x750/dfe6ed/000000.png&text=+" alt="movie poster">
             <p>
                 <small>{{ releaseDate }}</small>
             </p>
@@ -60,14 +61,21 @@ export default {
             cart: 'movies/getCart',
         }),
         movieGenre(){
-            let id = this.movie.genre_ids[0]
-            let mainGenre = this.genreList.find( genre => genre.id === id )
-            return mainGenre.name
+            if(this.movie.genre_ids.length > 0){
+                let id = this.movie.genre_ids[0]
+                let mainGenre = this.genreList.find( genre => genre.id === id )
+                return mainGenre.name
+            }
+            else return ''
         },
         releaseDate(){
-            let splitDate = this.movie.release_date.split('-')
-            let monthIndex = splitDate[1] - 1
-            return `${splitDate[2]} de ${this.months[monthIndex]}, ${splitDate[0]}`
+            if(this.movie.release_date){
+                let splitDate = this.movie.release_date.split('-')
+                let monthIndex = splitDate[1] - 1
+                return `${splitDate[2]} de ${this.months[monthIndex]}, ${splitDate[0]}`
+            } else {
+                return '-'
+            }
         },
         price(){
             //Para ter uma valor diferente cada filme peguei os 3 primeiros digitos do id e dividi por 100

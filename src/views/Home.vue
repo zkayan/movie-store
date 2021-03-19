@@ -1,11 +1,12 @@
 <template>
-    <transition name="slide-card" mode="out-in">
-        <div class="card-list container" v-if="loadedMovies.length > 0 && genreList.length > 0">
-            <div v-for="(movie, i) in loadedMovies" :key="i" class="mb-30">
-                <Card :movie="movie" :genreList="genreList"/>
-            </div>
+    <div class="card-list container" v-if="movies.length > 0 && genreList.length > 0">
+        <div v-for="(movie, i) in movies" :key="i" class="mb-30">
+            <Card :movie="movie" :genreList="genreList"/>
         </div>
-    </transition>
+    </div>
+    <div class="container" v-else>
+        <h4>Nenhum filme encontrado!</h4>
+    </div>
 </template>
 
 <script>
@@ -18,21 +19,17 @@ export default {
     },
     data: function () {
         return {
-            loadedMovies: [],
             genreList: []
         }
     },
     watch: {
-        movies: function () {
-            this.loadedMovies = this.movies
-        },
         genre: function () {
             this.genreList = this.genre
         }
     },
     beforeMount: async function(){
         await this.loadMovies({
-            page: '1',
+            page: 1,
             language: 'pt-BR'
         })
         await this.loadGenre({
@@ -50,7 +47,7 @@ export default {
         ...mapActions({
             loadMovies: 'movies/loadMovies',
             loadGenre: 'movies/loadGenre'
-        })
+        }),
     }
 }
 </script>

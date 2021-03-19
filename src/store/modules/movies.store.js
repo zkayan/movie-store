@@ -10,7 +10,7 @@ const initialState = () => ({
   totalCart: {
     movies: 0,
     value: 0
-  }
+  },
 })
 
 // State object
@@ -44,7 +44,30 @@ const actions = {
   loadMovies({ commit }, { page, language }) {
     axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=cb29b272563ee0631c4b4ea675c478e2&language=${language}&page=${page}`)
       .then(response => {
-        commit('setMovies', response.data.results)
+        if(page == 1){
+          commit('setMovies', response.data.results)
+        } else {
+          let loadedMovies = state.movies
+          response.data.results.forEach(element => {
+            loadedMovies.push(element)
+            commit('setMovies', loadedMovies)
+          });
+        }
+        commit('setCurrentPage', response.data.page)
+      })
+  },
+  searchMovies({ commit }, { query, page, language }) {
+    axios.get(`https://api.themoviedb.org/3/search/movie?api_key=cb29b272563ee0631c4b4ea675c478e2&language=${language}&query=${query}&page=${page}&include_adult=false`)
+      .then(response => {
+        if(page == 1){
+          commit('setMovies', response.data.results)
+        } else {
+          let loadedSearchMovies = state.movies
+          response.data.results.forEach(element => {
+            loadedSearchMovies.push(element)
+            commit('setMovies', loadedSearchMovies)
+          });
+        }
         commit('setCurrentPage', response.data.page)
       })
   },
