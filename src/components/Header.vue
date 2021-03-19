@@ -4,7 +4,7 @@
             <div class="logo" @click="navigateTo('/')">LOGO</div>
             <div class="search-container">
                 <input type="text" class="search" @keyup="searchMovie()" v-model="search" placeholder="Pesquisa">
-                <font-awesome-icon icon="search" class="search-icon" @click="searchMovie()" />
+                <font-awesome-icon icon="search" class="search-icon" />
             </div>
             <div class="header-icons">
                 <font-awesome-icon class="icons btn-icons" icon="heart" @click="openFavorite()" />
@@ -12,30 +12,41 @@
                 <div v-if="totalCart.movies > 0" class="total-movies" @click="openCart()">{{ totalCart.movies }}</div>
             </div>
         </div>
-        <div v-show="show.favorite">
-            <div class="collapse overflow-y">
-                <div class="collapse-header">
-                    <h4>Meus Favoritos</h4>
-                    <a @click="clearFavorites()" class="clear">Esvaziar</a>
-                </div>
-                <div v-if="this.favorites.length > 0">
-                    <div class="movies favorites" v-for="(movie, i) in favorites" :key="i">
-                        <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="movie poster">
-                        <p>{{ movie.title }}</p>
-                        <p>R$ {{ movie.price.toFixed(2).replace('.',',') }}</p>
-                        <font-awesome-icon class="collapse-icons btn-icons" v-tooltip.bottom-end="'Adicionar ao carrinho'" icon="shopping-cart" @click="addCart(movie)" />
-                        <font-awesome-icon class="collapse-icons btn-icons" v-tooltip.bottom-end="'Remover dos favoritos'" icon="trash" @click="removeFavorite(movie.id)" />
+        <transition
+        :css="false"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        
+        @before-leave="beforeLeave"
+        @leave="leave">
+                <div class="collapse overflow-y" v-if="show.favorite">
+                    <div class="collapse-header">
+                        <h4>Meus Favoritos</h4>
+                        <a @click="clearFavorites()" class="clear">Esvaziar</a>
+                    </div>
+                    <div v-if="this.favorites.length > 0">
+                        <div class="movies favorites" v-for="(movie, i) in favorites" :key="i">
+                            <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" alt="movie poster">
+                            <p>{{ movie.title }}</p>
+                            <p>R$ {{ movie.price.toFixed(2).replace('.',',') }}</p>
+                            <font-awesome-icon class="collapse-icons btn-icons" v-tooltip.bottom-end="'Adicionar ao carrinho'" icon="shopping-cart" @click="addCart(movie)" />
+                            <font-awesome-icon class="collapse-icons btn-icons" v-tooltip.bottom-end="'Remover dos favoritos'" icon="trash" @click="removeFavorite(movie.id)" />
+                        </div>
+                    </div>
+                    <div v-else>
+                        <p>Nenhum filme adicionado na lista de favoritos!</p>
                     </div>
                 </div>
-                <div v-else>
-                    <p>Nenhum filme adicionado na lista de favoritos!</p>
-                </div>
-            </div>
-            <div class="backdrop-filter" @click="closeCollapse()"/>
-        </div>
+        </transition>
 
-        <div v-show="show.cart">
-            <div class="collapse">
+        <transition
+        :css="false"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        
+        @before-leave="beforeLeave"
+        @leave="leave">
+            <div class="collapse" v-if="show.cart">
                 <div class="collapse-header">
                     <h4>Meu Carrinho</h4>
                     <a @click="clearCart()" class="clear">Esvaziar</a>
@@ -62,8 +73,9 @@
                     <p>Nenhum filme adicionado no carrinho!</p>
                 </div>
             </div>
-            <div class="backdrop-filter" @click="closeCollapse()"/>
-        </div>
+        </transition>
+        
+        <div v-if="show.favorite || show.cart" class="backdrop-filter" @click="closeCollapse()"/>
     </div>
 </template>
 
@@ -78,11 +90,26 @@ export default {
                 favorite: false,
                 cart: false,
             },
-            search: null
+            search: null,
+            collapseWidth: 0,
+            animationSpeed: 0
         }
     },
     mounted () {
         this.scroll()
+        if(window.innerWidth <= 576){
+            this.collapseWidth = 100
+            this.animationSpeed = 2
+        } else if(window.innerWidth <= 768){
+            this.collapseWidth = 80
+            this.animationSpeed = 2
+        } else if(window.innerWidth <= 1023){
+            this.collapseWidth = 60
+            this.animationSpeed = 2
+        } else {
+            this.collapseWidth = 30
+            this.animationSpeed = 1
+        }
     },
     computed: {
         ...mapGetters({
@@ -100,12 +127,12 @@ export default {
             searchMovies: 'movies/searchMovies',
         }),
         openFavorite(){
-            this.show.favorite = true
+            this.show.favorite = !this.show.favorite
             this.show.cart = false
         },
         openCart(){
             this.show.favorite = false
-            this.show.cart = true
+            this.show.cart = !this.show.cart
         },
         closeCollapse(){
             this.show.favorite = false
@@ -193,6 +220,7 @@ export default {
                 page: 1,
                 language: 'pt-BR'
             })
+            window.scrollTo(0,0);
             this.$router.push(route);
         },
         searchMovie(){
@@ -229,7 +257,31 @@ export default {
                     }
                 }
             }
-        }
+        },
+		animation(el, done, leave) {
+			let currentRigth = 1
+			const interval = setInterval(() => {
+				const newRigth = (leave ? -currentRigth : currentRigth - this.collapseWidth)
+				el.style.right = `${newRigth}%`
+				currentRigth+= this.animationSpeed
+				if(currentRigth > this.collapseWidth) {
+					clearInterval(interval)
+					done()
+				}
+			}, 10)
+		},
+		beforeEnter(el) {
+			el.style.right = `-${this.collapseWidth}%`
+		},
+		enter(el, done) {
+			this.animation(el, done, false)
+		},
+		beforeLeave(el) {
+			el.style.right = '0'
+		},
+		leave(el, done) {
+			this.animation(el, done, true)
+		},
     }
   
 }

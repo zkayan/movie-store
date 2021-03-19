@@ -2,7 +2,9 @@
     <div id="app">
         <Header/>
         <div>
+			<transition name="slide" mode="out-in">
             <router-view></router-view>
+			</transition>
         </div>
     </div>
 </template>
@@ -19,21 +21,29 @@ export default {
 </script>
 
 <style>
-	@keyframes slide-card-in {
-		from { transform: translateY(-10px); opacity: 0; }
+	.fade-enter, .fade-leave-to {
+		opacity: 0;
+	}
+
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity 2s;
+	}
+	
+	@keyframes slide-in {
+		from { transform: translateY(-30px); opacity: 0; }
 		to { transform: translateY(0px); opacity: 1; }
 	}
 
-	@keyframes slide-card-out {
+	@keyframes slide-out {
 		from { transform: translateY(0px); opacity: 1; }
-		to { transform: translateY(-10px); opacity: 0; }
+		to { transform: translateY(-30px); opacity: 0; }
 	}
 
-	.slide-card-enter-active {
-		animation: slide-card-in 0.7s ease;
+	.slide-enter-active {
+		animation: slide-in 0.3s ease;
 	}
 
-	.slide-card-leave-active {
-		animation: slide-card-out 0.7s ease;
-	}
+	.slide-leave-active {
+		animation: slide-out 0.3s ease;
+}
 </style>
